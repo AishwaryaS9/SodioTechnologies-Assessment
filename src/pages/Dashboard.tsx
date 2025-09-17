@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import BookCard from '../components/BookCard';
 import API_URL from '../api/endpoint';
 import type { Books } from '../utils/interface';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -11,6 +12,8 @@ const Dashboard = () => {
     const [books, setBooks] = useState<Books[]>([]);
     const [filteredBooks, setFilteredBooks] = useState<Books[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -48,6 +51,10 @@ const Dashboard = () => {
         setFilteredBooks(filtered);
     }, [searchQuery, books, sortOption]);
 
+    const handleAddBook = () => {
+        navigate('/add-book');
+    }
+
     return (
         <DashboardLayout activeMenu="Dashboard">
             <div className="my-5">
@@ -55,7 +62,8 @@ const Dashboard = () => {
                     <h2 className="text-xl md:text-xl font-medium">Manage Books</h2>
                     <div className="flex items-center space-x-4 mt-4 lg:mt-0 lg:justify-end w-full lg:w-auto">
                         <button
-                            className="flex items-center bg-primary text-white px-4 py-2 rounded-lg text-sm"
+                            className="flex items-center bg-primary text-white px-4 py-2 rounded-lg text-sm cursor-pointer"
+                            onClick={handleAddBook}
                         >
                             + Add New Book
                         </button>
