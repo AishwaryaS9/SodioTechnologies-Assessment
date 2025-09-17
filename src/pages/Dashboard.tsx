@@ -1,14 +1,15 @@
-import DashboardLayout from '../components/layout/Dashboardlayout'
+import DashboardLayout from '../components/layout/DashboardLayout';
 import { IoSearchOutline } from 'react-icons/io5'
 import { useEffect, useState } from 'react';
 import BookCard from '../components/BookCard';
 import API_URL from '../api/endpoint';
+import type { Books } from '../utils/interface';
 
 const Dashboard = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortOption, setSortOption] = useState('Name');
-    const [books, setBooks] = useState<any[]>([]);
-    const [filteredBooks, setFilteredBooks] = useState<any[]>([]);
+    const [books, setBooks] = useState<Books[]>([]);
+    const [filteredBooks, setFilteredBooks] = useState<Books[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -18,7 +19,6 @@ const Dashboard = () => {
                 const res = await fetch(API_URL);
                 if (!res.ok) throw new Error("Failed to fetch books");
                 const data = await res.json();
-                console.log("Book data", data)
                 setBooks(data);
                 setFilteredBooks(data);
             } catch (error) {

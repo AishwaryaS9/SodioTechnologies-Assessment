@@ -1,45 +1,53 @@
+import { BookOpen, Calendar } from "lucide-react";
+import type { Books } from "../utils/interface";
 
-const BookCard = ({ book }) => {
-    const getStatusTagColor = () => {
-        switch (String(book.available)) { 
-            case "true":
-                return "text-cyan-500 bg-cyan-50 border border-cyan-500/10";
-            case "false":
-                return "text-red-500 bg-red-50 border border-red-500/20";
-            default:
-                return "text-violet-500 bg-violet-50 border border-violet-500/10";
-        }
-    };
-
-    return (
-        <div className="relative bg-white rounded-xl py-4 shadow-md shadow-gray-100 border border-gray-200/50 cursor-pointer">
-            <div className="flex items-end gap-3 px-4">
-                <div className={`text-[11px] font-medium ${getStatusTagColor()} px-4 py-0.5 rounded`}>
-                    {book.available ? "Available" : "Out of Stock"}
-                </div>
-            </div>
-
-            <div className="px-4 border-l-[3px] border-gray-200">
-                <p className="text-sm font-medium text-gray-800 mt-4 line-clamp-2">
-                    {book.title}
-                </p>
-                <p className="text-xs text-gray-500 mt-1.5 line-clamp-2 leading-[18px]">
-                    {book.author}
-                </p>
-            </div>
-
-            <div className="px-4">
-                <div className="flex items-center justify-between my-1">
-                    <div>
-                        <label className="text-xs text-gray-500">Published Year</label>
-                        <p className="text-[13px] font-medium text-gray-900">
-                            {book.publishedDate}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+interface BookCardProps {
+  book: Books;
 }
+const BookCard = ({ book }: BookCardProps) => {
+
+  const getStatusTagColor = () => {
+    switch (String(book.available)) {
+      case "true":
+        return "text-cyan-600 bg-cyan-50 border border-cyan-200";
+      case "false":
+        return "text-red-600 bg-red-50 border border-red-200";
+      default:
+        return "text-violet-600 bg-violet-50 border border-violet-200";
+    }
+  };
+
+  return (
+    <div className="group relative bg-white rounded-2xl p-5 shadow-md shadow-gray-100 border border-gray-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+      <div className="absolute top-4 right-4">
+        <span className={`text-[11px] font-medium ${getStatusTagColor()} px-3 py-1 rounded-full`}>
+          {book.available ? "Available" : "Not Available"}
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <p className="text-lg font-semibold text-gray-900 leading-tight line-clamp-2">
+          {book.title}
+        </p>
+        <p className="text-sm text-gray-500 line-clamp-1">
+          {book.author}
+        </p>
+      </div>
+
+      <div className="border-t border-gray-100 my-4" />
+
+      <div className="flex items-center justify-between text-sm text-gray-700">
+        <div className="flex items-center gap-2">
+          <Calendar size={14} className="text-gray-400" />
+          <span className="font-medium">{book.publishedDate}</span>
+        </div>
+        <div className="flex items-center gap-2 text-gray-500 group-hover:text-gray-700 transition-colors">
+          <BookOpen size={14} />
+          <span className="text-xs">Details</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default BookCard;

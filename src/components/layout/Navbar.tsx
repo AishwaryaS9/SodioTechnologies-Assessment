@@ -1,14 +1,15 @@
 
-import  { useState } from 'react'
+import { useState } from 'react'
 import SideMenu from './SideMenu';
 import { HiOutlineMenu, HiOutlineX } from 'react-icons/hi';
+import type { LayoutProps } from '../../utils/interface';
 
-const Navbar = ({ activeMenu }) => {
+const Navbar = ({ activeMenu }: LayoutProps) => {
     const [openSideMenu, setOpenSideMenu] = useState(false);
 
     return (
         <div className='flex gap-5 bg-white border border-b border-gray-200/50 backdrop-blur-[2px] 
-        py-4 px-7 sticky top-0 z-30'>
+        py-4 px-4 sticky top-0 z-30'>
             <button className="block lg:hidden text-black"
                 onClick={() => {
                     setOpenSideMenu(!openSideMenu);
