@@ -15,12 +15,6 @@ export const SIDE_MENU_DATA: SideMenuItem[] = [
         icon: GoProjectRoadmap,
         path: "/add-book",
     },
-    {
-        id: "03",
-        label: "Edit Book",
-        icon: GoProjectRoadmap,
-        path: "/admin/projects",
-    },
 ];
 
 

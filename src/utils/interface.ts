@@ -31,9 +31,8 @@ export interface Books {
   title: string;
   author: string;
   genre: string;
-  publishedYear: string | null;
+  publishedYear: number | string | null;
   status: string;
-  publishedDate: string;
   pages: number;
   language: string;
   available: boolean;

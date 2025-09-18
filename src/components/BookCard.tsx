@@ -1,10 +1,14 @@
-import { BookOpen, Calendar } from "lucide-react";
+import { Calendar, Edit, Trash } from "lucide-react";
 import type { Books } from "../utils/interface";
 
 interface BookCardProps {
   book: Books;
+  onEdit: (book: Books) => void;
+  onDelete?: (bookId: string) => void;
 }
-const BookCard = ({ book }: BookCardProps) => {
+
+const BookCard = ({ book, onEdit, onDelete }: BookCardProps) => {
+  console.log('test', book)
 
   const getStatusTagColor = () => {
     switch (String(book.available)) {
@@ -29,23 +33,27 @@ const BookCard = ({ book }: BookCardProps) => {
         <p className="text-lg font-semibold text-gray-900 leading-tight line-clamp-2">
           {book.title}
         </p>
-        <p className="text-sm text-gray-500 line-clamp-1">
-          {book.author}
-        </p>
+        <p className="text-sm text-gray-500 line-clamp-1">{book.author}</p>
+        {book.genre && (
+          <span className="inline-block w-fit mt-1 text-[11px] font-medium text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full">
+            {book.genre}
+          </span>
+        )}
       </div>
 
       <div className="border-t border-gray-100 my-4" />
-
       <div className="flex items-center justify-between text-sm text-gray-700">
         <div className="flex items-center gap-2">
           <Calendar size={14} className="text-gray-400" />
-          <span className="font-medium">{book.publishedDate}</span>
+          <span className="font-medium">{book.publishedYear}</span>
         </div>
-        <div className="flex items-center gap-2 text-gray-500 group-hover:text-gray-700 transition-colors">
-          <BookOpen size={14} />
-          <span className="text-xs">Details</span>
+        <div className="flex items-center gap-2 text-gray-500 ">
+          <Edit size={14} className="cursor-pointer" onClick={() => onEdit(book)} />
+          <Trash size={14} color="red" className="cursor-pointer" onClick={() => onDelete?.(book._id)} />
         </div>
+
       </div>
+
     </div>
   );
 };

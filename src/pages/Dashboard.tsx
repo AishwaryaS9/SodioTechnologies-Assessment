@@ -1,43 +1,61 @@
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { IoSearchOutline } from 'react-icons/io5';
-import { useEffect, useState, useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import BookCard from '../components/BookCard';
 import API_URL from '../api/endpoint';
 import type { Books } from '../utils/interface';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../components/Pagination';
+import axios from 'axios';
+import { useMutation } from '@tanstack/react-query';
+import {
+    setSearchQuery,
+    setGenreFilter,
+    setStatusFilter,
+    setPage,
+    setBooks,
+} from '../redux/store/slice/bookSlice';
+import type { RootState } from '../redux/store';
+import { useAppDispatch, useAppSelector } from '../redux/store/hooks';
+import EditBookModal from '../components/EditBookModal';
+import DeleteAlert from '../components/DeleteAlert';
 
 const Dashboard = () => {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [books, setBooks] = useState<Books[]>([]);
-    const [filteredBooks, setFilteredBooks] = useState<Books[]>([]);
-    const [genreFilter, setGenreFilter] = useState('All');
-    const [statusFilter, setStatusFilter] = useState('All');
-    const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedBook, setSelectedBook] = useState<Books | null>(null);
+    const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+    const [bookToDelete, setBookToDelete] = useState<Books | null>(null);
+
+    const searchQuery = useAppSelector((state: RootState) => state.book.searchQuery);
+    const genreFilter = useAppSelector((state: RootState) => state.book.genreFilter);
+    const statusFilter = useAppSelector((state: RootState) => state.book.statusFilter);
+    const page = useAppSelector((state: RootState) => state.book.page);
+
     const pageSize = 10;
 
-    const navigate = useNavigate();
+    const fetchBooksMutation = useMutation<Books[], Error>({
+        mutationFn: async () => {
+            const res = await axios.get<Books[]>(API_URL);
+            return res.data;
+        },
+        onSuccess: (data) => {
+            dispatch(setBooks(data));
+        },
+        onError: (error) => {
+            console.error('Error fetching books:', error);
+        },
+    });
 
     useEffect(() => {
-        const fetchBooks = async () => {
-            try {
-                setLoading(true);
-                const res = await fetch(API_URL);
-                if (!res.ok) throw new Error("Failed to fetch books");
-                const data = await res.json();
-                setBooks(data);
-                setFilteredBooks(data);
-            } catch (error) {
-                console.error("Error fetching books:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBooks();
+        fetchBooksMutation.mutate();
     }, []);
+
+    const isLoading = fetchBooksMutation.status === 'pending';
+    const isError = fetchBooksMutation.status === 'error';
+    const books = fetchBooksMutation.data || [];
 
     const availableGenres = useMemo(() => {
         const genres = books
@@ -46,38 +64,66 @@ const Dashboard = () => {
         return ['All', ...Array.from(new Set(genres))];
     }, [books]);
 
-    useEffect(() => {
-        let filtered = books.filter(book => {
+    const filteredBooks = useMemo(() => {
+
+        return books.filter((book) => {
             const matchesSearch =
                 book.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 book.author?.toLowerCase().includes(searchQuery.toLowerCase());
 
-            const matchesGenre =
-                genreFilter === 'All' || book.genre === genreFilter;
+            const matchesGenre = genreFilter === 'All' || book.genre === genreFilter;
 
             const matchesStatus =
                 statusFilter === 'All' ||
                 (statusFilter === 'Available' && book.available) ||
-                (statusFilter === 'Unavailable' && !book.available);
+                (statusFilter === 'Not Available' && !book.available);
 
             return matchesSearch && matchesGenre && matchesStatus;
         });
+    }, [books, searchQuery, genreFilter, statusFilter]);
 
-        setFilteredBooks(filtered);
-        setTotalPages(Math.max(1, Math.ceil(filtered.length / pageSize)));
-        setPage(1); 
-    }, [searchQuery, books, genreFilter, statusFilter]);
-
-    const handlePageChange = (newPage: number) => {
-        setPage(newPage);
-    };
-
+    const totalPages = Math.max(1, Math.ceil(filteredBooks.length / pageSize));
     const startIndex = (page - 1) * pageSize;
     const paginatedBooks = filteredBooks.slice(startIndex, startIndex + pageSize);
 
-    const handleAddBook = () => {
-        navigate('/add-book');
+    const handleAddBook = () => navigate('/add-book');
+
+    const handleEditBook = (book: Books) => {
+        setSelectedBook(book);
+        setIsEditModalOpen(true);
     };
+
+    const handleDelete = (book: Books) => {
+        setBookToDelete(book);
+        setIsAlertModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setSelectedBook(null);
+        setIsEditModalOpen(false);
+    };
+
+    const handleEditSuccess = () => {
+        fetchBooksMutation.mutate();
+        handleCloseEditModal();
+    };
+
+    const handleCloseDeleteAlert = () => {
+        setIsAlertModalOpen(false);
+        setBookToDelete(null);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!bookToDelete) return;
+        try {
+            await axios.delete(`${API_URL}/${bookToDelete._id}`);
+            fetchBooksMutation.mutate();
+            handleCloseDeleteAlert();
+        } catch (err) {
+            console.error('Failed to delete book:', err);
+        }
+    };
+
 
     return (
         <DashboardLayout activeMenu="Dashboard">
@@ -102,12 +148,13 @@ const Dashboard = () => {
                                        focus:ring-primary focus:outline-none text-sm text-gray-700"
                             placeholder="Search books..."
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                         />
                         <span className="absolute left-3 text-gray-400">
                             <IoSearchOutline className="w-5 h-5" />
                         </span>
                     </div>
+
                     <div className="flex items-center space-x-4">
                         <div className="flex flex-col">
                             <label htmlFor="genreFilter" className="text-[12px] font-medium text-gray-600 mb-1">
@@ -118,7 +165,7 @@ const Dashboard = () => {
                                 className="border border-gray-300 rounded-lg px-3 py-2 bg-white 
                                 focus:ring-primary focus:outline-none text-[12px] text-gray-700"
                                 value={genreFilter}
-                                onChange={(e) => setGenreFilter(e.target.value)}
+                                onChange={(e) => dispatch(setGenreFilter(e.target.value))}
                             >
                                 {availableGenres.map((genre) => (
                                     <option key={genre} value={genre}>
@@ -137,24 +184,28 @@ const Dashboard = () => {
                                 className="border border-gray-300 rounded-lg px-3 py-2 bg-white 
                                 focus:ring-primary focus:outline-none text-[12px] text-gray-700"
                                 value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
+                                onChange={(e) => dispatch(setStatusFilter(e.target.value))}
                             >
                                 <option value="All">All</option>
                                 <option value="Available">Available</option>
-                                <option value="Unavailable">Unavailable</option>
+                                <option value="Not Available">Not Available</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                {loading ? (
+                {isLoading ? (
                     <div className="flex justify-center items-center h-96">
                         <p className="text-gray-500 text-sm">Loading books...</p>
+                    </div>
+                ) : isError ? (
+                    <div className="flex justify-center items-center h-96">
+                        <p className="text-red-500 text-sm">Failed to load books. Please try again.</p>
                     </div>
                 ) : paginatedBooks.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                         {paginatedBooks.map((book) => (
-                            <BookCard key={book._id} book={book} />
+                            <BookCard key={book._id} book={book} onEdit={handleEditBook} onDelete={() => handleDelete(book)} />
                         ))}
                     </div>
                 ) : (
@@ -171,9 +222,26 @@ const Dashboard = () => {
                     <Pagination
                         page={page}
                         totalPages={totalPages}
-                        onPageChange={handlePageChange}
+                        onPageChange={(newPage) => dispatch(setPage(newPage))}
                     />
                 </nav>
+            )}
+            {selectedBook && (
+                <EditBookModal
+                    isOpen={isEditModalOpen}
+                    onClose={handleCloseEditModal}
+                    bookId={selectedBook._id}
+                    onSuccess={handleEditSuccess}
+                />
+            )}
+
+            {isAlertModalOpen && (
+                <DeleteAlert
+                    content={`Are you sure you want to delete "${bookToDelete?.title}"? This action cannot be undone.`}
+                    isOpen={isAlertModalOpen}
+                    onClose={handleCloseDeleteAlert}
+                    onDelete={handleConfirmDelete}
+                />
             )}
         </DashboardLayout>
     );
