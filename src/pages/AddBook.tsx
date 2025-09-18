@@ -23,9 +23,11 @@ const AddBook = () => {
         author: Yup.string().required('Author is required'),
         genre: Yup.string().required('Genre is required'),
         status: Yup.string().required('Status is required'),
-        publishedYear: Yup.date()
+        publishedYear: Yup.number()
+            .typeError('Please enter a valid year')
             .required('Published Year is required')
-            .max(new Date(), 'Published year cannot be in the future'),
+            .min(1000, 'Please enter a valid year')
+            .max(new Date().getFullYear(), 'Published year cannot be in the future'),
         pages: Yup.number()
             .required('Number of pages is required')
             .min(1, 'Pages must be at least 1'),

@@ -135,6 +135,7 @@ const EditBookModal = ({ isOpen, onClose, bookId, onSuccess }: EditBookModalProp
                                 placeholder="Enter book title"
                                 value={formik.values.title || ''}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 aria-describedby={formik.errors.title ? 'title-error' : undefined}
                                 aria-invalid={!!formik.errors.title}
                             />
@@ -157,6 +158,7 @@ const EditBookModal = ({ isOpen, onClose, bookId, onSuccess }: EditBookModalProp
                                 placeholder="Enter author name"
                                 value={formik.values.author || ''}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 aria-describedby={formik.errors.author ? 'author-error' : undefined}
                                 aria-invalid={!!formik.errors.author}
                             />
@@ -179,6 +181,7 @@ const EditBookModal = ({ isOpen, onClose, bookId, onSuccess }: EditBookModalProp
                                 placeholder="Enter genre"
                                 value={formik.values.genre || ''}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 aria-describedby={formik.errors.genre ? 'genre-error' : undefined}
                                 aria-invalid={!!formik.errors.genre}
                             />
@@ -203,6 +206,7 @@ const EditBookModal = ({ isOpen, onClose, bookId, onSuccess }: EditBookModalProp
                                 placeholder="Enter year"
                                 value={formik.values.publishedYear || ''}
                                 onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
                                 aria-describedby={formik.errors.publishedYear ? 'year-error' : undefined}
                                 aria-invalid={!!formik.errors.publishedYear}
                             />
