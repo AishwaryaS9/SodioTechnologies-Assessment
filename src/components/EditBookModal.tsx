@@ -1,22 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import API_URL from '../api/endpoint';
-import type { Books } from '../utils/interface';
-import { X } from 'lucide-react';
+import type { Books, EditBookModalProps } from '../utils/interface';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-
-interface EditBookModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    bookId: string;
-    onSuccess: () => void;
-}
+import { RiCloseLargeLine } from 'react-icons/ri';
 
 const EditBookModal = ({ isOpen, onClose, bookId, onSuccess }: EditBookModalProps) => {
     const queryClient = useQueryClient();
+    const modalRef = useRef<HTMLDivElement>(null);
 
     const {
         data: book,
@@ -84,131 +78,180 @@ const EditBookModal = ({ isOpen, onClose, bookId, onSuccess }: EditBookModalProp
         if (book) formik.setValues(book);
     }, [book]);
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        if (isOpen) document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     return (
-        <div className="fixed top-0 right-0 left-0 z-50 flex justify-center items-center
-                        w-full h-[calc(100%-1rem)] max-h-full overflow-y-auto overflow-x-hidden bg-black/20 bg-opacity-50">
-            <div className="relative p-4 w-full max-w-2xl max-h-full">
-                <div className="relative bg-white rounded-lg shadow-sm">
-                    <div className="flex items-center justify-between p-4 md:p-5 border-b border-gray-200 rounded-t">
-                        <h3 className="text-lg font-medium text-gray-900">
-                            Edit Book
-                        </h3>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex justify-center items-center"
-                        >
-                            <X color='#212121' className="cursor-pointer" />
-                        </button>
-                    </div>
-
-                    {isBookLoading ? (
-                        <div className="p-4 text-center text-gray-500">Loading book details...</div>
-                    ) : isBookError ? (
-                        <div className="p-4 text-center text-red-500">
-                            Failed to load book data.
-                        </div>
-                    ) : (
-                        <form onSubmit={formik.handleSubmit} className="p-4 md:p-5 space-y-4">
-                            <div>
-                                <label className="text-xs font-medium text-gray-600">Title</label>
-                                <input
-                                    type="text"
-                                    name="title"
-                                    className="form-input"
-                                    placeholder="Enter book title"
-                                    value={formik.values.title || ''}
-                                    onChange={formik.handleChange}
-                                />
-                                {formik.touched.title && formik.errors.title && (
-                                    <p className="text-xs text-red-500">{formik.errors.title}</p>
-                                )}
-                            </div>
-
-                            <div>
-                                <label className="text-xs font-medium text-gray-600">Author</label>
-                                <input
-                                    type="text"
-                                    name="author"
-                                    className="form-input"
-                                    placeholder="Enter author name"
-                                    value={formik.values.author || ''}
-                                    onChange={formik.handleChange}
-                                />
-                                {formik.touched.author && formik.errors.author && (
-                                    <p className="text-xs text-red-500">{formik.errors.author}</p>
-                                )}
-                            </div>
-
-                            <div>
-                                <label className="text-xs font-medium text-gray-600">Genre</label>
-                                <input
-                                    type="text"
-                                    name="genre"
-                                    className="form-input"
-                                    placeholder="Enter genre"
-                                    value={formik.values.genre || ''}
-                                    onChange={formik.handleChange}
-                                />
-                                {formik.touched.genre && formik.errors.genre && (
-                                    <p className="text-xs text-red-500">{formik.errors.genre}</p>
-                                )}
-                            </div>
-
-                            <div>
-                                <label className="text-xs font-medium text-gray-600">Published Year</label>
-                                <input
-                                    type="number"
-                                    name="publishedYear"
-                                    min="0"
-                                    max={new Date().getFullYear()}
-                                    className="form-input"
-                                    placeholder="Enter year"
-                                    value={formik.values.publishedYear || ''}
-                                    onChange={formik.handleChange}
-                                />
-                                {formik.touched.publishedYear && formik.errors.publishedYear && (
-                                    <p className="text-xs text-red-500">{formik.errors.publishedYear}</p>
-                                )}
-                            </div>
-
-                            <div>
-                                <label className="text-xs font-medium text-gray-600">Available</label>
-                                <select
-                                    name="available"
-                                    className="form-input"
-                                    value={formik.values.available ? 'true' : 'false'}
-                                    onChange={(e) =>
-                                        formik.setFieldValue('available', e.target.value === 'true')
-                                    }
-                                >
-                                    <option value="true">Available</option>
-                                    <option value="false">Issued</option>
-                                </select>
-                            </div>
-
-                            <div className="flex justify-end mt-4">
-                                <button
-                                    className="cancel-btn"
-                                    onClick={onClose}
-                                    type="button"
-                                    disabled={updateBookMutation.isPending}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    className="add-btn ml-4"
-                                    type="submit"
-                                    disabled={updateBookMutation.isPending || !formik.isValid}
-                                >
-                                    {updateBookMutation.isPending ? 'Saving...' : 'Save Book'}
-                                </button>
-                            </div>
-                        </form>
-                    )}
+        <div
+            className="fixed inset-0 z-50 flex justify-center items-center bg-black/20 overflow-y-auto p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-book-title"
+        >
+            <div
+                ref={modalRef}
+                className="relative bg-white rounded-lg shadow-sm w-full max-w-2xl max-h-full overflow-auto"
+            >
+                <div className="flex items-center justify-between p-4 border-b border-gray-200 rounded-t">
+                    <h3 id="edit-book-title" className="text-lg font-medium text-gray-900">
+                        Edit Book
+                    </h3>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        aria-label="Close modal"
+                        className="text-gray-400 hover:bg-gray-200 cursor-pointer hover:text-gray-900 rounded-lg text-sm w-8 h-8 flex justify-center items-center"
+                    >
+                        <RiCloseLargeLine color="#212121" size={15} aria-hidden="true" className="cursor-pointer" />
+                    </button>
                 </div>
+
+                {isBookLoading ? (
+                    <div className="p-4 text-center text-gray-500" role="status" aria-live="polite">
+                        Loading book details...
+                    </div>
+                ) : isBookError ? (
+                    <div className="p-4 text-center text-red-500" role="alert">
+                        Failed to load book data.
+                    </div>
+                ) : (
+                    <form onSubmit={formik.handleSubmit} className="p-4 space-y-4">
+                        <div>
+                            <label htmlFor="title" className="text-xs font-medium text-gray-600">
+                                Title
+                            </label>
+                            <input
+                                id="title"
+                                name="title"
+                                type="text"
+                                className="form-input"
+                                placeholder="Enter book title"
+                                value={formik.values.title || ''}
+                                onChange={formik.handleChange}
+                                aria-describedby={formik.errors.title ? 'title-error' : undefined}
+                                aria-invalid={!!formik.errors.title}
+                            />
+                            {formik.touched.title && formik.errors.title && (
+                                <p id="title-error" className="text-xs text-red-500">
+                                    {formik.errors.title}
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label htmlFor="author" className="text-xs font-medium text-gray-600">
+                                Author
+                            </label>
+                            <input
+                                id="author"
+                                name="author"
+                                type="text"
+                                className="form-input"
+                                placeholder="Enter author name"
+                                value={formik.values.author || ''}
+                                onChange={formik.handleChange}
+                                aria-describedby={formik.errors.author ? 'author-error' : undefined}
+                                aria-invalid={!!formik.errors.author}
+                            />
+                            {formik.touched.author && formik.errors.author && (
+                                <p id="author-error" className="text-xs text-red-500">
+                                    {formik.errors.author}
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label htmlFor="genre" className="text-xs font-medium text-gray-600">
+                                Genre
+                            </label>
+                            <input
+                                id="genre"
+                                name="genre"
+                                type="text"
+                                className="form-input"
+                                placeholder="Enter genre"
+                                value={formik.values.genre || ''}
+                                onChange={formik.handleChange}
+                                aria-describedby={formik.errors.genre ? 'genre-error' : undefined}
+                                aria-invalid={!!formik.errors.genre}
+                            />
+                            {formik.touched.genre && formik.errors.genre && (
+                                <p id="genre-error" className="text-xs text-red-500">
+                                    {formik.errors.genre}
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label htmlFor="publishedYear" className="text-xs font-medium text-gray-600">
+                                Published Year
+                            </label>
+                            <input
+                                id="publishedYear"
+                                name="publishedYear"
+                                type="number"
+                                min="0"
+                                max={new Date().getFullYear()}
+                                className="form-input"
+                                placeholder="Enter year"
+                                value={formik.values.publishedYear || ''}
+                                onChange={formik.handleChange}
+                                aria-describedby={formik.errors.publishedYear ? 'year-error' : undefined}
+                                aria-invalid={!!formik.errors.publishedYear}
+                            />
+                            {formik.touched.publishedYear && formik.errors.publishedYear && (
+                                <p id="year-error" className="text-xs text-red-500">
+                                    {formik.errors.publishedYear}
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label htmlFor="available" className="text-xs font-medium text-gray-600">
+                                Available
+                            </label>
+                            <select
+                                id="available"
+                                name="available"
+                                className="form-input border border-gray-400 rounded-md focus:outline-none "
+                                value={formik.values.available ? 'true' : 'false'}
+                                onChange={(e) => formik.setFieldValue('available', e.target.value === 'true')}
+                            >
+                                <option value="true" className="hover:bg-gray-200">
+                                    Available
+                                </option>
+                                <option value="false" className="hover:bg-gray-200">
+                                    Issued
+                                </option>
+                            </select>
+                        </div>
+
+                        <div className="flex justify-end mt-4 gap-4">
+                            <button
+                                type="button"
+                                className="cancel-btn"
+                                onClick={onClose}
+                                disabled={updateBookMutation.isPending}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="add-btn"
+                                disabled={updateBookMutation.isPending || !formik.isValid}
+                            >
+                                {updateBookMutation.isPending ? 'Saving...' : 'Save Book'}
+                            </button>
+                        </div>
+                    </form>
+                )}
             </div>
         </div>
     );

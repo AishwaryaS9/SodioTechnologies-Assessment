@@ -66,7 +66,6 @@ const Dashboard = () => {
     }, [books]);
 
     const filteredBooks = useMemo(() => {
-
         return books.filter((book) => {
             const matchesSearch =
                 book.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -88,32 +87,26 @@ const Dashboard = () => {
     const paginatedBooks = filteredBooks.slice(startIndex, startIndex + pageSize);
 
     const handleAddBook = () => navigate('/add-book');
-
     const handleEditBook = (book: Books) => {
         setSelectedBook(book);
         setIsEditModalOpen(true);
     };
-
     const handleDelete = (book: Books) => {
         setBookToDelete(book);
         setIsAlertModalOpen(true);
     };
-
     const handleCloseEditModal = () => {
         setSelectedBook(null);
         setIsEditModalOpen(false);
     };
-
     const handleEditSuccess = () => {
         fetchBooksMutation.mutate();
         handleCloseEditModal();
     };
-
     const handleCloseDeleteAlert = () => {
         setIsAlertModalOpen(false);
         setBookToDelete(null);
     };
-
     const handleConfirmDelete = async () => {
         if (!bookToDelete) return;
         try {
@@ -125,25 +118,31 @@ const Dashboard = () => {
         }
     };
 
-
     return (
         <DashboardLayout activeMenu="Dashboard">
-            <div className="my-5">
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between">
-                    <h2 className="text-xl md:text-xl font-medium">Manage Books</h2>
-                    <div className="flex items-center space-x-4 mt-4 lg:mt-0 lg:justify-end w-full lg:w-auto">
+            <main aria-label="Dashboard Main Content" className="my-5">
+                <header className="flex flex-col lg:flex-row lg:items-center justify-between mb-6">
+                    <h1 className="text-lg font-semibold">Manage Books</h1>
+                    <div className="flex items-center space-x-4 mt-4 lg:mt-0">
                         <button
                             className="flex items-center bg-primary text-white px-4 py-2 rounded-lg text-sm cursor-pointer"
                             onClick={handleAddBook}
+                            aria-label="Add a new book"
                         >
                             + Add New Book
                         </button>
                     </div>
-                </div>
+                </header>
 
-                <div className="flex flex-col md:flex-row justify-between items-center my-8 space-y-4 md:space-y-0">
+                <section
+                    aria-labelledby="filters-heading"
+                    className="flex flex-col md:flex-row justify-between items-center mb-8 space-y-4 md:space-y-0"
+                >
+                    <h2 id="filters-heading" className="sr-only">Book Filters</h2>
                     <div className="flex items-center w-full md:w-1/2 relative">
+                        <label htmlFor="search" className="sr-only">Search books</label>
                         <input
+                            id="search"
                             type="text"
                             className="w-full border border-gray-300 rounded-lg px-10 py-2 bg-white 
                                        focus:ring-primary focus:outline-none text-sm text-gray-700"
@@ -152,7 +151,7 @@ const Dashboard = () => {
                             onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                         />
                         <span className="absolute left-3 text-gray-400">
-                            <IoSearchOutline className="w-5 h-5" />
+                            <IoSearchOutline className="w-5 h-5" aria-hidden="true" />
                         </span>
                     </div>
 
@@ -163,10 +162,10 @@ const Dashboard = () => {
                             </label>
                             <select
                                 id="genreFilter"
-                                className="border border-gray-300 rounded-lg px-3 py-2 bg-white
-                                focus:ring-primary focus:outline-none text-[12px] text-gray-700"
                                 value={genreFilter}
                                 onChange={(e) => dispatch(setGenreFilter(e.target.value))}
+                                className="border border-gray-300 rounded-lg px-3 py-2 bg-white
+                                           focus:ring-primary focus:outline-none text-[12px] text-gray-700"
                             >
                                 {availableGenres.map((genre) => (
                                     <option key={genre} value={genre}>
@@ -182,10 +181,10 @@ const Dashboard = () => {
                             </label>
                             <select
                                 id="statusFilter"
-                                className="border border-gray-300 rounded-lg px-3 py-2 bg-white 
-                                focus:ring-primary focus:outline-none text-[12px] text-gray-700"
                                 value={statusFilter}
                                 onChange={(e) => dispatch(setStatusFilter(e.target.value))}
+                                className="border border-gray-300 rounded-lg px-3 py-2 bg-white
+                                           focus:ring-primary focus:outline-none text-[12px] text-gray-700"
                             >
                                 <option value="All">All</option>
                                 <option value="Available">Available</option>
@@ -193,66 +192,79 @@ const Dashboard = () => {
                             </select>
                         </div>
                     </div>
-                </div>
-                {isLoading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                        {Array.from({ length: pageSize }).map((_, index) => (
-                            <BookCardSkeleton key={index} />
-                        ))}
-                    </div>
-                ) : isError ? (
-                    <div className="flex justify-center items-center h-96">
-                        <p className="text-red-500 text-sm">Failed to load books. Please try again.</p>
-                    </div>
-                ) : paginatedBooks.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                        {paginatedBooks.map((book) => (
-                            <BookCard
-                                key={book._id}
-                                book={book}
-                                onEdit={handleEditBook}
-                                onDelete={() => handleDelete(book)}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex flex-col justify-center items-center h-96">
-                        <p className="text-gray-500 mt-4 text-center text-sm">
-                            No books found matching your filters.
-                        </p>
-                    </div>
-                )}
-            </div>
-            {totalPages > 1 && (
-                isLoading ? (
-                    <PaginationSkeleton />
-                ) : (
-                    <nav className="my-15" aria-label="Book list pagination">
-                        <Pagination
-                            page={page}
-                            totalPages={totalPages}
-                            onPageChange={(newPage) => dispatch(setPage(newPage))}
-                        />
-                    </nav>
-                )
-            )}
-            {selectedBook && (
-                <EditBookModal
-                    isOpen={isEditModalOpen}
-                    onClose={handleCloseEditModal}
-                    bookId={selectedBook._id}
-                    onSuccess={handleEditSuccess}
-                />
-            )}
+                </section>
 
-            {isAlertModalOpen && (
-                <DeleteAlert
-                    content={`Are you sure you want to delete "${bookToDelete?.title}"? This action cannot be undone.`}
-                    isOpen={isAlertModalOpen}
-                    onClose={handleCloseDeleteAlert}
-                    onDelete={handleConfirmDelete}
-                />
-            )}
+                <section aria-labelledby="book-list-heading">
+                    <h2 id="book-list-heading" className="sr-only">Book List</h2>
+                    {isLoading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                            {Array.from({ length: pageSize }).map((_, index) => (
+                                <BookCardSkeleton key={index} />
+                            ))}
+                        </div>
+                    ) : isError ? (
+                        <div className="flex justify-center items-center h-96">
+                            <p className="text-red-500 text-sm" role="alert">
+                                Failed to load books. Please try again.
+                            </p>
+                        </div>
+                    ) : paginatedBooks.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                            {paginatedBooks.map((book) => (
+                                <BookCard
+                                    key={book._id}
+                                    book={book}
+                                    onEdit={handleEditBook}
+                                    onDelete={() => handleDelete(book)}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col justify-center items-center h-96">
+                            <p className="text-gray-500 mt-4 text-center text-sm">
+                                No books found matching your filters.
+                            </p>
+                        </div>
+                    )}
+                </section>
+
+                {totalPages > 1 && (
+                    <nav
+                        className="my-8"
+                        aria-label="Book list pagination"
+                    >
+                        {isLoading ? (
+                            <PaginationSkeleton />
+                        ) : (
+                            <Pagination
+                                page={page}
+                                totalPages={totalPages}
+                                onPageChange={(newPage) => dispatch(setPage(newPage))}
+                            />
+                        )}
+                    </nav>
+                )}
+
+                {selectedBook && (
+                    <EditBookModal
+                        isOpen={isEditModalOpen}
+                        onClose={handleCloseEditModal}
+                        bookId={selectedBook._id}
+                        onSuccess={handleEditSuccess}
+                        aria-label={`Edit book: ${selectedBook.title}`}
+                    />
+                )}
+
+                {isAlertModalOpen && (
+                    <DeleteAlert
+                        content={`Are you sure you want to delete "${bookToDelete?.title}"? This action cannot be undone.`}
+                        isOpen={isAlertModalOpen}
+                        onClose={handleCloseDeleteAlert}
+                        onDelete={handleConfirmDelete}
+                        aria-label={`Delete confirmation for ${bookToDelete?.title}`}
+                    />
+                )}
+            </main>
         </DashboardLayout>
     );
 };

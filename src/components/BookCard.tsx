@@ -1,4 +1,8 @@
-import { Calendar, Edit, Trash } from "lucide-react";
+import { GrTrash } from "react-icons/gr";
+import { FaRegEdit } from "react-icons/fa";
+import { MdOutlineCalendarMonth } from "react-icons/md";
+
+
 import type { Books } from "../utils/interface";
 
 interface BookCardProps {
@@ -21,41 +25,67 @@ const BookCard = ({ book, onEdit, onDelete }: BookCardProps) => {
   };
 
   return (
-    <div className="group relative bg-white rounded-2xl p-5 shadow-md shadow-gray-100 border border-gray-200 cursor-pointer">
+    <article
+      className="group relative bg-white rounded-2xl p-5 shadow-md shadow-gray-100 border border-gray-200"
+      aria-labelledby={`book-title-${book._id}`}
+      tabIndex={0}
+    >
       <div className="absolute top-4 right-4">
-        <span className={`text-[11px] font-medium ${getStatusTagColor()} px-3 py-1 rounded-full`}>
+        <span
+          className={`text-[11px] font-medium ${getStatusTagColor()} px-3 py-1 rounded-full`}
+          aria-label={`Book is ${book.available ? "Available" : "Issued"}`}
+        >
           {book.available ? "Available" : "Issued"}
         </span>
       </div>
 
       <div className="flex flex-col gap-1">
-        <p className="text-lg font-semibold text-gray-900 leading-tight line-clamp-2">
+        <h3
+          id={`book-title-${book._id}`}
+          className="text-lg font-medium text-gray-800 leading-tight line-clamp-2"
+        >
           {book.title}
+        </h3>
+        <p className="text-sm text-gray-500 line-clamp-1 leading-6">
+          {book.author}
         </p>
-        <p className="text-sm text-gray-500 line-clamp-1">{book.author}</p>
         {book.genre && (
-          <span className="inline-block w-fit mt-1 text-[11px] font-medium text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full">
+          <span
+            className="inline-block w-fit mt-1 text-[11px] font-medium text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full"
+            aria-label={`Genre: ${book.genre}`}
+          >
             {book.genre}
           </span>
         )}
       </div>
 
-      <div className="border-t border-gray-100 my-4" />
+      <hr className="border-t border-gray-100 my-4" />
+
       <div className="flex items-center justify-between text-sm text-gray-700">
         <div className="flex items-center gap-2">
-          <Calendar size={14} className="text-gray-400" />
+          <MdOutlineCalendarMonth size={15} className="text-gray-500" aria-hidden="true" />
           <span>Published Year:</span>
           <span className="font-medium">{book.publishedYear}</span>
         </div>
-        <div className="flex items-center gap-2 text-gray-500 ">
-          <Edit size={14} className="cursor-pointer" onClick={() => onEdit(book)} />
-          <Trash size={14} color="red" className="cursor-pointer" onClick={() => onDelete?.(book._id)} />
 
+        <div className="flex items-center gap-2 text-gray-500">
+          <button
+            type="button"
+            onClick={() => onEdit(book)}
+            aria-label={`Edit book: ${book.title}`}
+          >
+            <FaRegEdit title="Edit Book" size={15} className="cursor-pointer" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onDelete?.(book._id)}
+            aria-label={`Delete book: ${book.title}`}
+          >
+            <GrTrash title="Delete book" size={15} color="red" className="cursor-pointer" />
+          </button>
         </div>
-
       </div>
-
-    </div>
+    </article>
   );
 };
 

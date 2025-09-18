@@ -43,7 +43,7 @@ const AddBook = () => {
             queryClient.invalidateQueries({ queryKey: ['books'] });
             navigate('/');
         },
-        onError: (err: any) => {
+        onError: (err) => {
             toast.error('Failed to add book. Please try again.');
             console.error('Failed to add book:', err);
         },
@@ -52,11 +52,11 @@ const AddBook = () => {
     return (
         <DashboardLayout activeMenu="Add Book">
 
-            <div className="mt-14">
-                <div className="grid grid-cols-1 md:grid-cols-4 mt-4">
+            <main aria-label="Add Book Page" className="mt-14">
+                <section aria-labelledby="add-book" className="grid grid-cols-1 md:grid-cols-4 mt-4">
                     <div className="form-card col-span-3">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl md:text-xl font-medium dark:text-white">
+                            <h2 id="add-book-heading" className="text-lg md:text-md font-semibold dark:text-white">
                                 Add Book
                             </h2>
                         </div>
@@ -82,15 +82,17 @@ const AddBook = () => {
                             }}
                         >
                             {({ values, setFieldValue }) => (
-                                <Form>
+                                <Form aria-label="Add Book Form">
                                     <div className="mt-4">
-                                        <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
+                                        <label htmlFor="title" className="text-xs font-medium text-slate-600 dark:text-gray-400">
                                             Book Title
                                         </label>
                                         <Field
+                                            id="title"
                                             name="title"
                                             placeholder="Enter book name"
                                             className="form-input"
+                                            aria-required="true"
                                         />
                                         <ErrorMessage
                                             name="title"
@@ -100,13 +102,15 @@ const AddBook = () => {
                                     </div>
 
                                     <div className="mt-3">
-                                        <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
+                                        <label htmlFor='author' className="text-xs font-medium text-slate-600 dark:text-gray-400">
                                             Author
                                         </label>
                                         <Field
+                                            id="author"
                                             name="author"
                                             placeholder="Enter author name"
                                             className="form-input"
+                                            aria-required="true"
                                         />
                                         <ErrorMessage
                                             name="author"
@@ -117,10 +121,11 @@ const AddBook = () => {
 
                                     <div className="grid grid-cols-8 gap-4 mt-2">
                                         <div className="col-span-4">
-                                            <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
+                                            <label htmlFor="genre" className="text-xs font-medium text-slate-600 dark:text-gray-400">
                                                 Genre
                                             </label>
                                             <Field
+                                                id="genre"
                                                 name="genre"
                                                 placeholder="Enter genre"
                                                 className="form-input"
@@ -133,10 +138,11 @@ const AddBook = () => {
                                         </div>
 
                                         <div className="col-span-4">
-                                            <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
+                                            <label htmlFor="language" className="text-xs font-medium text-slate-600 dark:text-gray-400">
                                                 Language
                                             </label>
                                             <Field
+                                                id="language"
                                                 name="language"
                                                 type="text"
                                                 placeholder="Enter language"
@@ -150,18 +156,18 @@ const AddBook = () => {
                                         </div>
                                     </div>
 
-
-
                                     <div className="grid grid-cols-12 gap-4 mt-2">
                                         <div className="col-span-6 md:col-span-4">
-                                            <label className="text-xs font-medium text-slate-600 ">
+                                            <label htmlFor="status" className="text-xs font-medium text-slate-600 ">
                                                 Status
                                             </label>
                                             <SelectDropdown
+                                                id="status"
                                                 options={STATUS_DATA}
                                                 value={values.status}
                                                 onChange={(value) => setFieldValue("status", value)}
                                                 placeholder="Select Availability"
+
                                             />
                                             <ErrorMessage
                                                 name="status"
@@ -171,16 +177,18 @@ const AddBook = () => {
                                         </div>
 
                                         <div className="col-span-6 md:col-span-4">
-                                            <label className="text-xs font-medium text-slate-600 ">
+                                            <label htmlFor="publishedYear" className="text-xs font-medium text-slate-600 ">
                                                 Published Year
                                             </label>
                                             <Field
+                                                id="publishedYear"
                                                 name="publishedYear"
                                                 type="number"
                                                 min="1900"
                                                 max={new Date().getFullYear()}
                                                 placeholder="Enter year"
                                                 className="form-input"
+                                                aria-required="true"
                                             />
                                             <ErrorMessage
                                                 name="publishedYear"
@@ -190,10 +198,11 @@ const AddBook = () => {
                                         </div>
 
                                         <div className="col-span-12 md:col-span-3">
-                                            <label className="text-xs font-medium text-slate-600 ">
+                                            <label htmlFor="pages" className="text-xs font-medium text-slate-600 ">
                                                 Pages
                                             </label>
                                             <Field
+                                                id="pages"
                                                 name="pages"
                                                 type="number"
                                                 className="form-input"
@@ -206,13 +215,12 @@ const AddBook = () => {
                                         </div>
                                     </div>
 
-
-
                                     <div className="flex justify-end mt-7">
                                         <button
                                             className="add-btn"
                                             type="submit"
                                             disabled={addBookMutation.status === 'pending'}
+                                            aria-label="Submit new book form"
                                         >
                                             {addBookMutation.status === 'pending' ? 'Adding...' : 'ADD BOOK'}
                                         </button>
@@ -221,8 +229,8 @@ const AddBook = () => {
                             )}
                         </Formik>
                     </div>
-                </div>
-            </div>
+                </section>
+            </main>
 
         </DashboardLayout>
     );

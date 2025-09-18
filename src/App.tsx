@@ -7,11 +7,18 @@ function App() {
 
   return (
     <>
-      <Toaster />
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/add-book" element={<AddBook />} />
-      </Routes>
+      <Toaster toastOptions={{
+        ariaProps: {
+          role: "alert",
+          "aria-live": "assertive"
+        }
+      }} />
+      <main id="main-content" aria-label="Main Content">
+        <Routes>
+          <Route path="/" element={<Dashboard aria-label="Dashboard Page" />} />
+          <Route path="/add-book" element={<AddBook aria-label="Add Book Page" />} />
+        </Routes>
+      </main>
     </>
   )
 }

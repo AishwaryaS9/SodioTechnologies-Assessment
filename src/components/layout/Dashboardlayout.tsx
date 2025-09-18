@@ -3,19 +3,32 @@ import Navbar from './Navbar';
 import SideMenu from './SideMenu';
 
 const DashboardLayout = ({ children, activeMenu }: LayoutProps) => {
-
     return (
-        <div className=''>
-            <Navbar activeMenu={activeMenu} />
-            <div className="flex">
-                <div className="max-[1080px]:hidden">
+        <div className="min-h-screen flex flex-col">
+            <header role="banner" aria-label="Dashboard navigation bar">
+                <Navbar activeMenu={activeMenu} />
+            </header>
+
+            <div className="flex flex-1">
+                <aside
+                    className="max-[1080px]:hidden"
+                    role="navigation"
+                    aria-label="Sidebar menu"
+                >
                     <SideMenu activeMenu={activeMenu} />
-                </div>
-                <div className="grow mx-5">{children}</div>
+                </aside>
+
+                <main
+                    role="main"
+                    aria-label="Dashboard main content"
+                    className="grow mx-5 focus:outline-none"
+                    tabIndex={-1}
+                >
+                    {children}
+                </main>
             </div>
-
         </div>
-    )
-}
+    );
+};
 
-export default DashboardLayout
+export default DashboardLayout;

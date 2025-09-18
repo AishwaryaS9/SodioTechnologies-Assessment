@@ -23,6 +23,7 @@ export interface SelectDropdownProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  id?: string;
 }
 
 
@@ -38,3 +39,22 @@ export interface Books {
   available: boolean;
 }
 
+export interface PaginationProps {
+  page: number;
+  totalPages: number;
+  onPageChange: (newPage: number) => void;
+}
+
+export interface DeleteAlertProps {
+  content: string;
+  isOpen: boolean;
+  onDelete: () => void;
+  onClose: () => void;
+}
+
+export interface EditBookModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  bookId: string;
+  onSuccess: () => void;
+}

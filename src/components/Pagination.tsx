@@ -1,33 +1,27 @@
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import type { PaginationProps } from "../utils/interface";
 
-interface PaginationProps {
-    page: number;
-    totalPages: number;
-    onPageChange: (newPage: number) => void;
-}
-
-const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onPageChange }) => {
-
+const Pagination = ({ page, totalPages, onPageChange }: PaginationProps) => {
     const handlePrevious = () => {
-        if (page > 1) {
-            onPageChange(page - 1);
-        }
+        if (page > 1) onPageChange(page - 1);
     };
 
     const handleNext = () => {
-        if (page < totalPages) {
-            onPageChange(page + 1);
-        }
+        if (page < totalPages) onPageChange(page + 1);
     };
 
     return (
-        <div className="flex items-center gap-2 text-gray-500 justify-center mb-6">
+        <nav
+            className="flex items-center gap-2 text-gray-500 justify-center mb-6"
+            aria-label="Pagination Navigation"
+        >
             <button
                 type="button"
                 aria-label="Previous page"
                 className="mr-2 flex items-center gap-1 text-xs"
                 onClick={handlePrevious}
-                disabled={page === 1} >
+                disabled={page === 1}
+            >
                 <MdKeyboardArrowLeft className="mt-px w-6 h-6" />
             </button>
 
@@ -36,10 +30,10 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onPageChange 
                     <button
                         key={pageNumber}
                         type="button"
-                        onClick={() => {
-                            onPageChange(pageNumber);
-                        }}
-                        className={`flex items-center justify-center w-7 h-7 aspect-square rounded-sm 
+                        onClick={() => onPageChange(pageNumber)}
+                        aria-label={`Page ${pageNumber}`}
+                        aria-current={page === pageNumber ? "page" : undefined}
+                        className={`flex items-center justify-center w-7 h-7 aspect-square rounded-sm
                             ${page === pageNumber ? 'bg-primary text-white' : 'hover:bg-gray-300/10'}
                             transition-all text-xs`}
                     >
@@ -57,7 +51,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onPageChange 
             >
                 <MdKeyboardArrowRight className="mt-px w-6 h-6" />
             </button>
-        </div>
+        </nav>
     );
 };
 
