@@ -17,6 +17,10 @@
         background-color: #fcfbfc;
         overflow-x: hidden;
     }
+
+    * {
+        scrollbar-width: thin;
+    }
 }
 
 .form-card {

@@ -19,6 +19,7 @@ import type { RootState } from '../redux/store';
 import { useAppDispatch, useAppSelector } from '../redux/store/hooks';
 import EditBookModal from '../components/EditBookModal';
 import DeleteAlert from '../components/DeleteAlert';
+import { BookCardSkeleton, PaginationSkeleton } from '../components/SkeletonLoader/BookCardSkeleton';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -76,7 +77,7 @@ const Dashboard = () => {
             const matchesStatus =
                 statusFilter === 'All' ||
                 (statusFilter === 'Available' && book.available) ||
-                (statusFilter === 'Not Available' && !book.available);
+                (statusFilter === 'Issued' && !book.available);
 
             return matchesSearch && matchesGenre && matchesStatus;
         });
@@ -162,7 +163,7 @@ const Dashboard = () => {
                             </label>
                             <select
                                 id="genreFilter"
-                                className="border border-gray-300 rounded-lg px-3 py-2 bg-white 
+                                className="border border-gray-300 rounded-lg px-3 py-2 bg-white
                                 focus:ring-primary focus:outline-none text-[12px] text-gray-700"
                                 value={genreFilter}
                                 onChange={(e) => dispatch(setGenreFilter(e.target.value))}
@@ -188,15 +189,16 @@ const Dashboard = () => {
                             >
                                 <option value="All">All</option>
                                 <option value="Available">Available</option>
-                                <option value="Not Available">Not Available</option>
+                                <option value="Issued">Issued</option>
                             </select>
                         </div>
                     </div>
                 </div>
-
                 {isLoading ? (
-                    <div className="flex justify-center items-center h-96">
-                        <p className="text-gray-500 text-sm">Loading books...</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        {Array.from({ length: pageSize }).map((_, index) => (
+                            <BookCardSkeleton key={index} />
+                        ))}
                     </div>
                 ) : isError ? (
                     <div className="flex justify-center items-center h-96">
@@ -205,7 +207,12 @@ const Dashboard = () => {
                 ) : paginatedBooks.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                         {paginatedBooks.map((book) => (
-                            <BookCard key={book._id} book={book} onEdit={handleEditBook} onDelete={() => handleDelete(book)} />
+                            <BookCard
+                                key={book._id}
+                                book={book}
+                                onEdit={handleEditBook}
+                                onDelete={() => handleDelete(book)}
+                            />
                         ))}
                     </div>
                 ) : (
@@ -216,15 +223,18 @@ const Dashboard = () => {
                     </div>
                 )}
             </div>
-
             {totalPages > 1 && (
-                <nav className="my-15" aria-label="Book list pagination">
-                    <Pagination
-                        page={page}
-                        totalPages={totalPages}
-                        onPageChange={(newPage) => dispatch(setPage(newPage))}
-                    />
-                </nav>
+                isLoading ? (
+                    <PaginationSkeleton />
+                ) : (
+                    <nav className="my-15" aria-label="Book list pagination">
+                        <Pagination
+                            page={page}
+                            totalPages={totalPages}
+                            onPageChange={(newPage) => dispatch(setPage(newPage))}
+                        />
+                    </nav>
+                )
             )}
             {selectedBook && (
                 <EditBookModal

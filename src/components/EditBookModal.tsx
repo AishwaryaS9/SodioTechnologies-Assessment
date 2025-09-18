@@ -37,7 +37,7 @@ const EditBookModal = ({ isOpen, onClose, bookId, onSuccess }: EditBookModalProp
                 title: updatedBook.title,
                 author: updatedBook.author,
                 genre: updatedBook.genre,
-                publishedYear: updatedBook.publishedYear, 
+                publishedYear: updatedBook.publishedYear,
                 available: updatedBook.available,
             };
             await axios.put(`${API_URL}/${bookId}`, fullBook);
@@ -59,7 +59,7 @@ const EditBookModal = ({ isOpen, onClose, bookId, onSuccess }: EditBookModalProp
             title: '',
             author: '',
             genre: '',
-            publishedYear: 1900, 
+            publishedYear: 1900,
             available: true,
         },
         validationSchema: Yup.object({
@@ -185,7 +185,7 @@ const EditBookModal = ({ isOpen, onClose, bookId, onSuccess }: EditBookModalProp
                                     }
                                 >
                                     <option value="true">Available</option>
-                                    <option value="false">Not Available</option>
+                                    <option value="false">Issued</option>
                                 </select>
                             </div>
 

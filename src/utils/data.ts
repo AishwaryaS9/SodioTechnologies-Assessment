@@ -20,5 +20,5 @@ export const SIDE_MENU_DATA: SideMenuItem[] = [
 
 export const STATUS_DATA = [
     { label: "Available", value: "Available" },
-    { label: "Not Available", value: "Not Available" },
+    { label: "Issued", value: "Issued" },
 ]

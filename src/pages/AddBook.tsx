@@ -16,7 +16,6 @@ const AddBook = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const queryClient = useQueryClient();
-
     const currentBooks = useAppSelector(state => state.book.books);
 
     const validationSchema = Yup.object().shape({
@@ -39,21 +38,21 @@ const AddBook = () => {
             return response.data;
         },
         onSuccess: (newBook) => {
-            toast.success('Book added successfully')
+            toast.success('Book added successfully');
             dispatch(setBooks([newBook, ...currentBooks]));
             queryClient.invalidateQueries({ queryKey: ['books'] });
             navigate('/');
         },
         onError: (err: any) => {
-            toast.error('Failed to add book. Please try again.')
+            toast.error('Failed to add book. Please try again.');
             console.error('Failed to add book:', err);
-            alert(err.message || 'Failed to add book. Try again.');
         },
     });
 
     return (
         <DashboardLayout activeMenu="Add Book">
-            <div className="mt-5">
+
+            <div className="mt-14">
                 <div className="grid grid-cols-1 md:grid-cols-4 mt-4">
                     <div className="form-card col-span-3">
                         <div className="flex items-center justify-between">
@@ -116,25 +115,46 @@ const AddBook = () => {
                                         />
                                     </div>
 
-                                    <div className="mt-3">
-                                        <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
-                                            Genre
-                                        </label>
-                                        <Field
-                                            name="genre"
-                                            placeholder="Enter genre"
-                                            className="form-input"
-                                        />
-                                        <ErrorMessage
-                                            name="genre"
-                                            component="div"
-                                            className="text-red-500 text-xs mt-1"
-                                        />
+                                    <div className="grid grid-cols-8 gap-4 mt-2">
+                                        <div className="col-span-4">
+                                            <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
+                                                Genre
+                                            </label>
+                                            <Field
+                                                name="genre"
+                                                placeholder="Enter genre"
+                                                className="form-input"
+                                            />
+                                            <ErrorMessage
+                                                name="genre"
+                                                component="div"
+                                                className="text-red-500 text-xs mt-1"
+                                            />
+                                        </div>
+
+                                        <div className="col-span-4">
+                                            <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
+                                                Language
+                                            </label>
+                                            <Field
+                                                name="language"
+                                                type="text"
+                                                placeholder="Enter language"
+                                                className="form-input"
+                                            />
+                                            <ErrorMessage
+                                                name="language"
+                                                component="div"
+                                                className="text-red-500 text-xs mt-1"
+                                            />
+                                        </div>
                                     </div>
+
+
 
                                     <div className="grid grid-cols-12 gap-4 mt-2">
                                         <div className="col-span-6 md:col-span-4">
-                                            <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
+                                            <label className="text-xs font-medium text-slate-600 ">
                                                 Status
                                             </label>
                                             <SelectDropdown
@@ -149,8 +169,9 @@ const AddBook = () => {
                                                 className="text-red-500 text-xs mt-1"
                                             />
                                         </div>
+
                                         <div className="col-span-6 md:col-span-4">
-                                            <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
+                                            <label className="text-xs font-medium text-slate-600 ">
                                                 Published Year
                                             </label>
                                             <Field
@@ -169,7 +190,7 @@ const AddBook = () => {
                                         </div>
 
                                         <div className="col-span-12 md:col-span-3">
-                                            <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
+                                            <label className="text-xs font-medium text-slate-600 ">
                                                 Pages
                                             </label>
                                             <Field
@@ -185,22 +206,7 @@ const AddBook = () => {
                                         </div>
                                     </div>
 
-                                    <div className="col-span-6 md:col-span-4 mt-3">
-                                        <label className="text-xs font-medium text-slate-600 dark:text-gray-400">
-                                            Language
-                                        </label>
-                                        <Field
-                                            name="language"
-                                            type="text"
-                                            placeholder="Enter language"
-                                            className="form-input"
-                                        />
-                                        <ErrorMessage
-                                            name="language"
-                                            component="div"
-                                            className="text-red-500 text-xs mt-1"
-                                        />
-                                    </div>
+
 
                                     <div className="flex justify-end mt-7">
                                         <button
@@ -217,6 +223,7 @@ const AddBook = () => {
                     </div>
                 </div>
             </div>
+
         </DashboardLayout>
     );
 };

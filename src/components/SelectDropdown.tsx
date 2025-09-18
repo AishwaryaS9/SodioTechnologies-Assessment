@@ -14,7 +14,7 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({ options, value, onChang
         <div className='relative w-full'>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className='w-full text-sm text-black outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 flex justify-between items-center dark:bg-gray-700 dark:text-white dark:border-gray-600'
+                className='w-full text-sm text-black outline-none bg-white border border-slate-100 px-2.5 py-3 rounded-md mt-2 flex justify-between items-center'
             >
                 {value ? options.find((opt) => opt.value === value)?.label : placeholder}
                 <span className="ml-2">
@@ -22,10 +22,10 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({ options, value, onChang
                 </span>
             </button>
             {isOpen && (
-                <div className="absolute w-full bg-white border border-slate-100 rounded-md mt-1 shadow-md z-10 dark:bg-gray-700 dark:border-gray-600">
+                <div className="absolute w-full bg-white border border-slate-100 rounded-md mt-1 shadow-md z-10 ">
                     {options.map((option) => (
                         <div
-                            className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white"
+                            className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
                             key={option.value}
                             onClick={() => handleSelect(option.value)}
                         >
