@@ -38,7 +38,6 @@ const SelectDropdown: React.FC<SelectDropdownProps> = ({ options, value, onChang
         }
     };
 
-    // Close dropdown if clicked outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {

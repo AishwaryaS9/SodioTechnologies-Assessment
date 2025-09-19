@@ -4,7 +4,6 @@ import AddBook from "./pages/AddBook"
 import { Toaster } from "react-hot-toast"
 
 function App() {
-
   return (
     <>
       <Toaster toastOptions={{

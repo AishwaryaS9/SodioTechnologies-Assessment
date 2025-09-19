@@ -53,7 +53,6 @@ const AddBook = () => {
 
     return (
         <DashboardLayout activeMenu="Add Book">
-
             <main aria-label="Add Book Page" className="mt-14">
                 <section aria-labelledby="add-book" className="grid grid-cols-1 md:grid-cols-4 mt-4">
                     <div className="form-card col-span-3">

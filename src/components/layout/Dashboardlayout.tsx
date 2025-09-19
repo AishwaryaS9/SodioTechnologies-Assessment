@@ -9,7 +9,7 @@ const DashboardLayout = ({ children, activeMenu }: LayoutProps) => {
                 <Navbar activeMenu={activeMenu} />
             </header>
 
-            <div className="flex flex-1">
+            <div className="flex flex-1 pt-[60px]">
                 <aside
                     className="max-[1080px]:hidden"
                     role="navigation"

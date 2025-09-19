@@ -86,7 +86,11 @@ const Dashboard = () => {
     const startIndex = (page - 1) * pageSize;
     const paginatedBooks = filteredBooks.slice(startIndex, startIndex + pageSize);
 
-    const handleAddBook = () => navigate('/add-book');
+    const handleAddBook = () => {
+        navigate('/add-book');
+        dispatch(setStatusFilter('All'));
+    }
+
     const handleEditBook = (book: Books) => {
         setSelectedBook(book);
         setIsEditModalOpen(true);
@@ -101,6 +105,7 @@ const Dashboard = () => {
     };
     const handleEditSuccess = () => {
         fetchBooksMutation.mutate();
+        dispatch(setStatusFilter('All'));
         handleCloseEditModal();
     };
     const handleCloseDeleteAlert = () => {
@@ -222,7 +227,7 @@ const Dashboard = () => {
                     ) : (
                         <div className="flex flex-col justify-center items-center h-96">
                             <p className="text-gray-500 mt-4 text-center text-sm">
-                                No books found matching your filters.
+                                No books found at the moment.
                             </p>
                         </div>
                     )}
