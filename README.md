@@ -11,7 +11,7 @@ Supports CRUD operations via a mock API [https://crudcrud.com/](https://crudcrud
 
 ## 🌐 Live URL & Repository
 
-- **Live Application**: [https://localhost:5173/](https://localhost:5173)
+- **Live Application**: [https://book-management-dashboard-assessmen.vercel.app/](https://book-management-dashboard-assessmen.vercel.app/)
 
 - **GitHub Repository**: [https://github.com/AishwaryaS9/SodioTechnologies-Assessment.git](https://github.com/AishwaryaS9/SodioTechnologies-Assessment.git)
 
