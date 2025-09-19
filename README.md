@@ -134,6 +134,7 @@ book-management-app/
 ├── tsconfig.app.json
 ├── tsconfig.json
 ├── tsconfig.node.json
+├── vercel.json
 ├── vite.config.ts
 ```
 
@@ -172,8 +173,6 @@ book-management-app/
     ```
 
 6.  Open [http://localhost:5173](http://localhost:5173) in your browser to see the app.
-
-
 
 ## 🎯 Conclusion
 
